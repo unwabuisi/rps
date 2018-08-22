@@ -19,7 +19,7 @@
     <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
 
     <!-- game JS -->
-    <script type="text/javascript" src="game.js"></script>
+    <script type="text/javascript" src="game2.js"></script>
 
 </head>
 <body>
@@ -36,10 +36,12 @@
 
         <!-- Enter your name -->
         <div class="row">
-            <div class="col-12" id="nameInput">
-                <label for="username">Name:</label>
-                <input type="text" name="username" value="" id="username">
-                <button type="button" name="button" class="btn btn-outline-success" id="nameSubmit">Start</button>
+            <div class="col-12">
+                <div id="nameInput">
+                    <label for="username">Name:</label>
+                    <input type="text" name="username" value="" id="username">
+                    <button type="button" name="button" class="btn btn-outline-success" id="nameSubmit">Start</button>
+                </div>
             </div>
         </div>
 
@@ -50,17 +52,23 @@
 
             <!-- player1 -->
             <div class="col-4">
-                <figure class="figure"><img src="http://via.placeholder.com/150x150" class="figure-img" alt=""></figure>
+                <div id="player1">
+                    <figure class="figure"><img src="http://via.placeholder.com/150x150" class="figure-img" alt=""></figure>
+                </div>
             </div>
 
             <!-- Round result -->
             <div class="col-4">
-                <figure class="figure"><img src="http://via.placeholder.com/150x150" class="figure-img" alt=""></figure>
+                <div id="roundResult">
+                    <figure class="figure"><img src="http://via.placeholder.com/150x150" class="figure-img" alt=""></figure>
+                </div>
             </div>
 
             <!-- player2 -->
             <div class="col-4">
-                <figure class="figure"><img src="http://via.placeholder.com/150x150" class="figure-img" alt=""></figure>
+                <div id="player2">
+                    <figure class="figure"><img src="http://via.placeholder.com/150x150" class="figure-img" alt=""></figure>
+                </div>
             </div>
         </div>
 
