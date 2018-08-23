@@ -18,6 +18,8 @@
     <!-- firebase -->
     <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.js"></script>
+
     <!-- game JS -->
     <script type="text/javascript" src="game2.js"></script>
 
@@ -53,34 +55,35 @@
             <!-- player1 -->
             <div class="col-4">
                 <div id="player1">
-                    <figure class="figure"><img src="http://via.placeholder.com/150x150" class="figure-img" alt=""></figure>
+                    <div class="row" id="player1Name"></div>
+                    <div class="row" id="player1Selections"></div>
+                    <div class="row" id="player1Score"></div>
                 </div>
             </div>
 
             <!-- Round result -->
             <div class="col-4">
                 <div id="roundResult">
-                    <figure class="figure"><img src="http://via.placeholder.com/150x150" class="figure-img" alt=""></figure>
                 </div>
             </div>
 
             <!-- player2 -->
             <div class="col-4">
                 <div id="player2">
-                    <figure class="figure"><img src="http://via.placeholder.com/150x150" class="figure-img" alt=""></figure>
+                    <div class="row" id="player2Name"></div>
+                    <div class="row" id="player2Selections"></div>
+                    <div class="row" id="player2Score"></div>
                 </div>
             </div>
         </div>
-
-
 
 
         <!-- Chatbox -->
         <div class="row">
             <div class="col"></div>
             <div class="col-10 col-lg-6">
-                <div class="row">
-                    <table class="table table-hover table-borderless">
+                <div class="row" id="chatboxy">
+                    <table id="chat" class="table table-hover table-borderless">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -94,12 +97,10 @@
                     </table>
                 </div>
                 <div class="row">
-                    <!-- https://stackoverflow.com/questions/36821036/submit-button-in-bootstrap-form-doesnt-react-on-enter-key -->
-                    <!-- Make BUTTON accept ENTER as click/submit -->
                     <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Send a Message" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <input type="text" id="chatMessage" class="form-control" placeholder="Send a Message" aria-label="Recipient's username" aria-describedby="button-addon2">
                       <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="button-addon2">Send</button>
+                        <button class="btn btn-outline-secondary" type="button" id="chatSend">Send</button>
                       </div>
                     </div>
                 </div>
