@@ -17,7 +17,7 @@ var config = {
   var database = firebase.database();
   var gameRef = database.ref('/game/');
   var chatRef = database.ref('/game/chat');
-  var turn = 0;
+  var turn = 1;
 
 
 //===================================== FUNCTIONS
@@ -48,7 +48,7 @@ var nameSubmitted = function () {
                 name:"",
                 message:"Welcome to Rock Paper Scissors"
             });
-            gameRef.update({turn:0});
+            gameRef.update({turn:1});
             turn = parseInt(snapshot.val().turn);
         }
 
@@ -110,6 +110,7 @@ gameRef.once('value', function(snapshot) {
 //database FUNCTIONS
 //Game
 gameRef.on('value', function (snapshot){
+
     //there are no players in the game
     if (!snapshot.child('player1').exists()) {
         $("#player1").html("Waiting for Player 1");
@@ -128,25 +129,16 @@ gameRef.on('value', function (snapshot){
         fillBox(player2,"player2");
     }
 
-    $("#player1 #player1Score").html("Wins: " + snapshot.child('player1').val().wins +
-    " | Losses: " + snapshot.child('player1').val().losses);
 
-    $("#player2 #player2Score").html("Wins: " + snapshot.child('player2').val().wins +
-    " | Losses: " + snapshot.child('player2').val().losses);
+
+    // $("#player1 #player1Score").html("Wins: " + snapshot.child('player1').val().wins +
+    // " | Losses: " + snapshot.child('player1').val().losses);
+    //
+    // $("#player2 #player2Score").html("Wins: " + snapshot.child('player2').val().wins +
+    // " | Losses: " + snapshot.child('player2').val().losses);
 
 //===============================================
-    //if turn = 0; this is player1's turn to begin
-    // if (turn === 0) {
-    //
-    //     // Player 1's turn
-    //     if ((turn%2 === 0) || (turn === 0)) {
-    //         //$().html("Hi" player1Name "You are player 1. it's your turn")
-    //     }
-    //     // Player 2's turn
-    //     else if (turn%2 != 0) {
-    //         //$().html("Hi" player2Name "You are player 2. It's your turn")
-    //     }
-    // }
+
 //===============================================
 });
 
@@ -156,6 +148,7 @@ function gameResult(player1,player2) {
 
         var player1 = snapshot.val().player1;
         var player2 = snapshot.val().player2;
+        var turn = snapshot.val().turn;
 
         var winner = 'draw';
 
@@ -197,7 +190,11 @@ function gameResult(player1,player2) {
 
         }
 
-        $("#roundResult").html(winner);
+        if (turn === 3) {
+            gameRef.update({turn:1});
+            $("#roundResult").html(winner);
+        }
+
     });
 
     $("#player1 .btn").toggle();
@@ -212,7 +209,19 @@ $("#player1").on('click',".btn", function() {
     $("#player1Selections").append("<h2 class='playerSelection'>"+selection+"</h2>");
 
     var player1 = gameRef.child('player1');
-    player1.update({choice:selection});
+
+
+    gameRef.once('value', function(snapshot) {
+        var turn = parseInt(snapshot.val().turn);
+        if (turn === 1) {
+            turn++;
+            player1.update({choice:selection});
+            gameRef.update({turn:turn});
+        }
+    });
+
+
+
 
 
 });
@@ -221,10 +230,22 @@ $("#player2").on('click',".btn", function() {
     var selection = $(this).attr('data-attribute');
     $("#player2 .btn").toggle();
     $("#player2Selections").append("<h2 class='playerSelection'>"+selection+"</h2>");
-    var player2 = gameRef.child('player2');
-    player2.update({choice:selection});
 
-    gameResult();
+    var player2 = gameRef.child('player2');
+
+
+    gameRef.once('value', function(snapshot) {
+        var turn = parseInt(snapshot.val().turn);
+        if (turn === 2) {
+            turn++;
+            player2.update({choice:selection});
+            gameRef.update({turn:turn});
+            gameResult();
+        }
+    });
+
+
+
 });
 
 
@@ -256,7 +277,6 @@ $("#chatMessage").keypress(function(e){
 
 chatRef.on('child_added',function(snapshot){
     var chats = snapshot.val();
-    console.log(chats.time);
     $("#chat tbody").append("<tr><td>" + chats.name+"</td><td>" + chats.message+"</td><td>"+chats.time+"</td></tr>");
 });
 
@@ -267,11 +287,6 @@ chatRef.on('child_removed', function(snapshot) {
 
 
 
-
-
-var day = moment.unix(1534984460101);
-day.format('LT');
-// console.log(day.format('LT'));
 
 
 //===================================== PROCESS
