@@ -17,6 +17,7 @@ var config = {
   var database = firebase.database();
   var gameRef = database.ref('/game/');
   var chatRef = database.ref('/game/chat');
+  var connectionsRef = database.ref('/connections');
   var turn = 1;
 
 
@@ -35,6 +36,7 @@ var nameSubmitted = function () {
                 losses:0,
                 choice:""
             });
+            connectionsRef.push(true);
         }
         //if player 2 does not exist - add player 2
         else if (!snapshot.child('player2').exists()) {
@@ -44,6 +46,8 @@ var nameSubmitted = function () {
                 losses:0,
                 choice:""
             });
+            connectionsRef.push(true);
+            var player2 = snapshot.child('player2');
             gameRef.child('chat').push({
                 name:"",
                 message:"Welcome to Rock Paper Scissors"
@@ -83,7 +87,7 @@ function fillBox (data,boxToFill) {
     'class':'btn btn-light'
     });
 
-    playerName = data.val().name;
+    playerName = data.name;
 
     $("#" + boxToFill + "Name").html("<h2>"+playerName+"</h2>");
 
@@ -91,43 +95,55 @@ function fillBox (data,boxToFill) {
     rock.after(paper);
     paper.after(scissors);
 
-    $("#" + boxToFill + "Score").html("Wins: " + data.val().wins+" | Losses: " + data.val().losses);
+    $("#" + boxToFill + "Score").html("Wins: " + data.wins+" | Losses: " + data.losses);
 
 }
 
 //loads names and scores on refresh
-gameRef.once('value', function(snapshot) {
-    if (snapshot.child('player1').exists()) {
-        var player1 = snapshot.child('player1');
-        fillBox(player1,"player1");
-    }
-    if (snapshot.child('player2').exists()) {
-        var player2 = snapshot.child('player2');
-        fillBox(player2,"player2");
-    }
-});
+// gameRef.once('value', function(snapshot) {
+//     if (snapshot.child('player1').exists()) {
+//         var player1 = snapshot.child('player1');
+//         console.log(player1);
+//         fillBox(player1,"player1");
+//     }
+//     if (snapshot.child('player2').exists()) {
+//         var player2 = snapshot.child('player2');
+//         fillBox(player2,"player2");
+//     }
+// });
 
 //database FUNCTIONS
 //Game
+
+
+
+
 gameRef.on('value', function (snapshot){
 
-    //there are no players in the game
+    // there are no players in the game
     if (!snapshot.child('player1').exists()) {
         $("#player1").html("Waiting for Player 1");
     }
-    else if ($("#player1").html() === "Waiting for Player 1") {
-        var player1 = snapshot.child('player1');
-        fillBox(player1,"player1");
-    }
+    // else if (snapshot.child('player1').exists()) {
+    //
+    //     var player1 = snapshot.child('player1');
+    //     console.log(player1);
+    //     fillBox(player1,"player1");
+    // }
+    //player 1 has entered username and connected
+    // else if ($("#player1").html() === "Waiting for Player 1") {
+    //
+    // }
 
     //player 1 is in the game but player 2 is not
     if (!snapshot.child('player2').exists()) {
         $("#player2").html("Waiting for Player 2");
     }
-    else if ($("#player2").html() === "Waiting for Player 2") {
-        var player2 = snapshot.child('player2');
-        fillBox(player2,"player2");
-    }
+    //player 2 has entered username and connected
+    // else if ($("#player2").html() === "Waiting for Player 2") {
+    //     var player2 = snapshot.child('player2');
+    //     fillBox(player2,"player2");
+    // }
 
 
 
@@ -204,7 +220,11 @@ function gameResult(player1,player2) {
 }
 
 $("#player1").on('click',".btn", function() {
+
+    //selection value is whatever button is pressed (rock, paper, scissors)
     var selection = $(this).attr('data-attribute');
+
+
     $("#player1 .btn").toggle();
     $("#player1Selections").append("<h2 class='playerSelection'>"+selection+"</h2>");
 
@@ -220,19 +240,17 @@ $("#player1").on('click',".btn", function() {
         }
     });
 
-
-
-
-
 });
 
 $("#player2").on('click',".btn", function() {
+
+    //selection value is whatever button is pressed (rock, paper, scissors)
     var selection = $(this).attr('data-attribute');
+
     $("#player2 .btn").toggle();
     $("#player2Selections").append("<h2 class='playerSelection'>"+selection+"</h2>");
 
     var player2 = gameRef.child('player2');
-
 
     gameRef.once('value', function(snapshot) {
         var turn = parseInt(snapshot.val().turn);
@@ -243,13 +261,10 @@ $("#player2").on('click',".btn", function() {
             gameResult();
         }
     });
-
-
-
 });
 
 
-//chat
+//chat functions
 var chatButton = function(user,message) {
     // moment.unix();
     // time.format('LT');
@@ -283,14 +298,6 @@ chatRef.on('child_added',function(snapshot){
 chatRef.on('child_removed', function(snapshot) {
     $("#chat tbody").empty();
 });
-
-
-
-
-
-
-//===================================== PROCESS
-
 
 
 
