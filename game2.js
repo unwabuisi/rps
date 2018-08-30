@@ -19,10 +19,20 @@ var config = {
   var chatRef = database.ref('/game/chat');
   var connectionsRef = database.ref('/connections');
   var turn = 1;
-
+  var playerOneExists = false;
+  var playerTwoExists = false;
+  var playerOneData = null;
+  var playerTwoData = null;
 
 //===================================== FUNCTIONS
+database.ref('.info/connected').on('value', function (snapshot){
+    var connected = snapshot.val();
 
+    if (connected) {
+        gameRef.set(true);
+        gameRef.onDisconnect().remove();
+    }
+});
 //submits player username to database
 var nameSubmitted = function () {
     var username = $("#username").val().trim();
@@ -115,37 +125,35 @@ function fillBox (data,boxToFill) {
 //database FUNCTIONS
 //Game
 
-
-
-
 gameRef.on('value', function (snapshot){
 
-    // there are no players in the game
-    if (!snapshot.child('player1').exists()) {
-        $("#player1").html("Waiting for Player 1");
+    //Check to see if player(s) exists
+    playerOneExists = snapshot.child('player1').exists();
+    playerTwoExists = snapshot.child('player2').exists();
+
+    //stores player data in variables
+    playerOneData = snapshot.child('player1').val();
+    playerTwoData = snapshot.child('player2').val();
+
+    //fill in name and score to player1 HTML DIV
+    if (playerOneExists) {
+        fillBox(playerOneData,'player1');
+        $("#player1 #player1Score").text("Wins: " + playerOneData.wins +
+        " | Losses: " + playerOneData.losses);
     }
-    // else if (snapshot.child('player1').exists()) {
-    //
-    //     var player1 = snapshot.child('player1');
-    //     console.log(player1);
-    //     fillBox(player1,"player1");
-    // }
-    //player 1 has entered username and connected
-    // else if ($("#player1").html() === "Waiting for Player 1") {
-    //
-    // }
-
-    //player 1 is in the game but player 2 is not
-    if (!snapshot.child('player2').exists()) {
-        $("#player2").html("Waiting for Player 2");
+    else {
+        $("#player1").text("Waiting for Player 1");
     }
-    //player 2 has entered username and connected
-    // else if ($("#player2").html() === "Waiting for Player 2") {
-    //     var player2 = snapshot.child('player2');
-    //     fillBox(player2,"player2");
-    // }
 
-
+    //fill in name and score to player2 HTML DIV
+    if (playerTwoExists) {
+        fillBox(playerTwoData,"player2");
+        $("#player2 #player2Score").text("Wins: " + playerTwoData.wins +
+        " | Losses: " + playerTwoData.losses);
+    }
+    else {
+        $("#player2").text("Waiting for Player 2");
+    }
 
     // $("#player1 #player1Score").html("Wins: " + snapshot.child('player1').val().wins +
     // " | Losses: " + snapshot.child('player1').val().losses);
@@ -298,7 +306,6 @@ chatRef.on('child_added',function(snapshot){
 chatRef.on('child_removed', function(snapshot) {
     $("#chat tbody").empty();
 });
-
 
 
 });
