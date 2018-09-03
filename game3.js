@@ -1,17 +1,18 @@
 $(document).ready(function() {
 
+//=================================================== GLOBAL VARIABLES
+
 //Initialize Firebase
 var config = {
-apiKey: "AIzaSyD56IP395cIAA9RJlVvzf4oNKpIylCcWz0",
-authDomain: "rockpaperscissors-4820d.firebaseapp.com",
-databaseURL: "https://rockpaperscissors-4820d.firebaseio.com",
-projectId: "rockpaperscissors-4820d",
-storageBucket: "rockpaperscissors-4820d.appspot.com",
-messagingSenderId: "746769973140"
+    apiKey: "AIzaSyD56IP395cIAA9RJlVvzf4oNKpIylCcWz0",
+    authDomain: "rockpaperscissors-4820d.firebaseapp.com",
+    databaseURL: "https://rockpaperscissors-4820d.firebaseio.com",
+    projectId: "rockpaperscissors-4820d",
+    storageBucket: "rockpaperscissors-4820d.appspot.com",
+    messagingSenderId: "746769973140"
 };
 firebase.initializeApp(config);
 
-//=================================================== GLOBAL VARIABLES
 var database = firebase.database();
 var chatRef = database.ref('/chat');
 var connectionsRef = database.ref('/connections');
@@ -78,13 +79,7 @@ playersRef.on('value', function(snapshot) {
 
 });
 
-//=================================================== FUNCTIONS
-
-// callback functino to submit name to database
-var nameSubmitted = function () {
-    username = $("#username").val().trim();
-    gameStart();
-};
+//=================================================== KEY & CLICK EVENT LISTENERS
 
 //listener for 'enter' on username field
 $('#username').keypress(function(e){
@@ -140,6 +135,15 @@ $("#player2").on('click', '.btn', function() {
 
 
 });
+
+
+//=================================================== FUNCTIONS
+
+// callback functino to submit name to database
+var nameSubmitted = function () {
+    username = $("#username").val().trim();
+    gameStart();
+};
 
 //fills in boxes with player data (username, wins, and losses) or gives a waiting message
 function fillBox (data,boxToFill) {
@@ -207,6 +211,59 @@ function gameStart() {
     }
     else {
         alert("Game full, please try again later");
+    }
+}
+
+//Displays who won and who lost, increments wins/losses accordingly
+function gameResult(player1,player2) {
+
+    var playerOneWins = function(){
+        playersRef.child('1').child('Wins').set(player1.wins + 1);
+        playersRef.child('2').child('Losses').set(player2.losses + 1);
+    };
+
+    var playerTwoWins = function(){
+
+    };
+
+    var tie = function(){
+
+    };
+
+    if (player1Choice === 'Rock') {
+        if (player2Choice === 'Rock') {
+            tie();
+        }
+        if (player2Choice === 'Paper') {
+            playerTwoWins();
+        }
+        if (player2Choice === 'Scissors') {
+            playerOneWins();
+        }
+    }
+    else if (player1Choice === 'Paper' ) {
+        if (player2Choice === 'Rock') {
+            playerOneWins();
+        }
+        if (player2Choice === 'Paper') {
+            tie();
+        }
+        if (player2Choice === 'Scissors') {
+            playerTwoWins();
+        }
+
+    }
+    else if (player1Choice === 'Scissors') {
+        if (player2Choice === 'Rock') {
+            playerTwoWins();
+        }
+        if (player2Choice === 'Paper') {
+            playerOneWins();
+        }
+        if (player2Choice === 'Scissors') {
+            tie();
+        }
+
     }
 }
 
