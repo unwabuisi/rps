@@ -106,7 +106,6 @@ function fillBox (data,boxToFill) {
     paper.after(scissors);
 
     $("#" + boxToFill + "Score").html("Wins: " + data.wins+" | Losses: " + data.losses);
-
 }
 
 //loads names and scores on refresh
